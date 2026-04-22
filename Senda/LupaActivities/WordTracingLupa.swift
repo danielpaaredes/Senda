@@ -1,25 +1,20 @@
 //
-//  WordTracingView.swift
+//  WordTracingLupa.swift
 //  Senda
 //
 //  Created by Daniel Paredes on 22/04/26.
 //
-
-/*import SwiftUI
+import SwiftUI
 import AVFoundation
 
-struct WordTracingView: View {
-    
-    let word: String
-    var onFinished: () -> Void
+struct WordTracingLupa: View {
     
     @State private var points: [CGPoint] = []
     private let synthesizer = AVSpeechSynthesizer()
     
     var body: some View {
         ZStack {
-            Color.background
-                .ignoresSafeArea()
+            Color.background.ignoresSafeArea()
             
             VStack {
                 
@@ -27,7 +22,7 @@ struct WordTracingView: View {
                 
                 ZStack {
                     
-                    Text(word)
+                    Text("Lupa")
                         .font(.system(size: 120, weight: .bold))
                         .foregroundColor(.gray.opacity(0.3))
                     
@@ -40,7 +35,6 @@ struct WordTracingView: View {
                         }
                     }
                     .stroke(Color.black, lineWidth: 8)
-                    
                 }
                 .frame(width: 350, height: 300)
                 .contentShape(Rectangle())
@@ -53,9 +47,9 @@ struct WordTracingView: View {
                 
                 Spacer()
                 
-                Button(action: {
-                    
-                }) {
+                NavigationLink {
+                    EjercicioPeloView()
+                } label: {
                     Image(systemName: "arrow.right")
                         .font(.title)
                         .foregroundColor(.typography)
@@ -69,7 +63,7 @@ struct WordTracingView: View {
             }
         }
         .onAppear {
-            speak("Con tu dedo dibuja la palabra \(word)")
+            speak("Con tu dedo dibuja la palabra Lupa")
         }
     }
     
@@ -82,8 +76,6 @@ struct WordTracingView: View {
 }
 
 #Preview {
-    WordTracingView(word: "Pala") {
+    WordTracingLupa()
         
-    }
 }
-*/

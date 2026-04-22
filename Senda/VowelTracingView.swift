@@ -13,7 +13,9 @@ struct VowelTracingView: View {
     let vowel: String
     var onFinished: () -> Void
     
-    @State private var points: [CGPoint] = []
+    
+    @State private var strokes: [[CGPoint]] = []
+    @State private var currentStroke: [CGPoint] = []
     
     let synthesizer = AVSpeechSynthesizer()
     
@@ -32,11 +34,28 @@ struct VowelTracingView: View {
                         .font(.system(size: 250, weight: .bold))
                         .foregroundColor(.gray.opacity(0.3))
                     
+                    // 🔥 DIBUJO DE STROKES COMPLETOS
+                    ForEach(0..<strokes.count, id: \.self) { index in
+                        Path { path in
+                            let stroke = strokes[index]
+                            guard let first = stroke.first else { return }
+                            
+                            path.move(to: first)
+                            
+                            for point in stroke.dropFirst() {
+                                path.addLine(to: point)
+                            }
+                        }
+                        .stroke(Color.black, lineWidth: 8)
+                    }
+                    
+                    // 🔥 TRAZO ACTUAL (EN TIEMPO REAL)
                     Path { path in
-                        guard let first = points.first else { return }
+                        guard let first = currentStroke.first else { return }
+                        
                         path.move(to: first)
                         
-                        for point in points.dropFirst() {
+                        for point in currentStroke.dropFirst() {
                             path.addLine(to: point)
                         }
                     }
@@ -48,7 +67,11 @@ struct VowelTracingView: View {
                 .gesture(
                     DragGesture(minimumDistance: 0)
                         .onChanged { value in
-                            points.append(value.location)
+                            currentStroke.append(value.location)
+                        }
+                        .onEnded { _ in
+                            strokes.append(currentStroke)
+                            currentStroke = []
                         }
                 )
                 
@@ -74,6 +97,7 @@ struct VowelTracingView: View {
         }
     }
     
+    // MARK: - SPEECH
     func speak(_ text: String) {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "es-MX")
@@ -81,7 +105,6 @@ struct VowelTracingView: View {
         synthesizer.speak(utterance)
     }
 }
-
 #Preview {
     VowelTracingView(vowel: "Aa") {
         

@@ -1,25 +1,25 @@
 //
-//  WordTracingView.swift
+//  WordTracingLupa.swift
 //  Senda
 //
 //  Created by Daniel Paredes on 22/04/26.
 //
 
-/*import SwiftUI
+import SwiftUI
 import AVFoundation
 
-struct WordTracingView: View {
+struct WordTracingPala: View {
     
     let word: String
     var onFinished: () -> Void
+    
     
     @State private var points: [CGPoint] = []
     private let synthesizer = AVSpeechSynthesizer()
     
     var body: some View {
         ZStack {
-            Color.background
-                .ignoresSafeArea()
+            Color.background.ignoresSafeArea()
             
             VStack {
                 
@@ -27,7 +27,7 @@ struct WordTracingView: View {
                 
                 ZStack {
                     
-                    Text(word)
+                    Text("Pala")
                         .font(.system(size: 120, weight: .bold))
                         .foregroundColor(.gray.opacity(0.3))
                     
@@ -40,7 +40,6 @@ struct WordTracingView: View {
                         }
                     }
                     .stroke(Color.black, lineWidth: 8)
-                    
                 }
                 .frame(width: 350, height: 300)
                 .contentShape(Rectangle())
@@ -53,9 +52,10 @@ struct WordTracingView: View {
                 
                 Spacer()
                 
-                Button(action: {
-                    
-                }) {
+                NavigationLink {
+                    EjercicioLupaView()
+                    EmptyView()
+                } label: {
                     Image(systemName: "arrow.right")
                         .font(.title)
                         .foregroundColor(.typography)
@@ -69,21 +69,21 @@ struct WordTracingView: View {
             }
         }
         .onAppear {
-            speak("Con tu dedo dibuja la palabra \(word)")
+            speak("Con tu dedo dibuja la palabra Pala")
         }
     }
     
     func speak(_ text: String) {
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "es-MX")
-        utterance.rate = 0.4
-        synthesizer.speak(utterance)
+        let u = AVSpeechUtterance(string: text)
+        u.voice = AVSpeechSynthesisVoice(language: "es-MX")
+        u.rate = 0.4
+        synthesizer.speak(u)
     }
 }
 
 #Preview {
-    WordTracingView(word: "Pala") {
+    WordTracingPala(word: "Pala") {
         
     }
 }
-*/
+

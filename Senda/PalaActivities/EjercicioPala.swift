@@ -1,33 +1,30 @@
 //
-//  EjercicioLupa.swift
+//  EjercicioPala.swift
 //  Senda
 //
 //  Created by Daniel Paredes on 22/04/26.
 //
-
 import SwiftUI
 import AVFoundation
 
-struct EjercicioLupa: View {
+struct EjercicioPala: View {
     
     let synthesizer = AVSpeechSynthesizer()
-    @State private var showTracing = false
     
     var body: some View {
         ZStack {
-            Color.background
-                .ignoresSafeArea()
+            Color.background.ignoresSafeArea()
             
             VStack {
                 
                 HStack {
-                    Button(action: { }) {
+                    Button {} label: {
                         Image(systemName: "house.fill")
                             .padding(12)
                             .background(Color.yellowa)
                             .cornerRadius(12)
                     }
-                    .foregroundColor(Color.typography)
+                    .foregroundColor(.typography)
                     
                     Spacer()
                 }
@@ -38,44 +35,42 @@ struct EjercicioLupa: View {
                 
                 HStack(spacing: 30) {
                     
-                    BotonLupa(texto: "Lu", colorBase: Color.yellowa) {
-                        speak("luh")
-                    }
-                    
-                    BotonLupa(texto: "pa", colorBase: Color.yellowa) {
+                    BotonPala(texto: "Pa", colorBase: .yellowa) {
                         speak("pa")
                     }
                     
-                    Button {
-                        showTracing = true
+                    BotonPala(texto: "la", colorBase: .yellowa) {
+                        speak("la")
+                    }
+                    
+                    NavigationLink {
+                        WordTracingPala(word: "Pala") {
+                            
+                        }
                     } label: {
                         Image(systemName: "arrow.right")
                             .font(.system(size: 35, weight: .bold))
                             .frame(width: 120, height: 75)
                             .background(Color.yellowa)
                             .cornerRadius(25)
+                            .foregroundColor(.typography)
                     }
-                    .foregroundColor(Color.typography)
                 }
                 
                 Spacer()
             }
         }
-        .sheet(isPresented: $showTracing) {
-            WordTracingView(word: "lupa") {
-                showTracing = false
-            }
-        }
     }
     
     func speak(_ text: String) {
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "es-MX")
-        utterance.rate = 0.4
-        synthesizer.speak(utterance)
+        let u = AVSpeechUtterance(string: text)
+        u.voice = AVSpeechSynthesisVoice(language: "es-MX")
+        u.rate = 0.4
+        synthesizer.speak(u)
     }
 }
-struct BotonLupa: View {
+
+struct BotonPala: View {
     
     let texto: String
     let colorBase: Color
@@ -91,7 +86,7 @@ struct BotonLupa: View {
                 Text(texto)
                     .font(.custom("Lexend-Light", size: 90))
             }
-            .foregroundColor(Color.typography)
+            .foregroundColor(.typography)
             .frame(width: 260, height: 260)
             .background(colorBase.opacity(0.5))
             .cornerRadius(30)
@@ -102,6 +97,7 @@ struct BotonLupa: View {
         }
     }
 }
+
 #Preview {
-    EjercicioLupa()
+    EjercicioPala()
 }

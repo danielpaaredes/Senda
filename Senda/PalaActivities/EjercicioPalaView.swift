@@ -1,5 +1,5 @@
 //
-//  EjercicioPeloView.swift
+//  EjercicioPalaView.swift
 //  Senda
 //
 //  Created by Citlalli Jaramar Lopez Medina on 22/04/26.
@@ -7,11 +7,11 @@
 import SwiftUI
 import AVFoundation
 
-struct EjercicioPeloView: View {
+struct EjercicioPalaView: View {
     
-    let imagenNombre: String = "pelo"
-    let wordText: String = "Pelo"
-    let wordSound: String = "Pelo"
+    let imagenNombre: String = "pala"
+    let wordText: String = "Pala"
+    let wordSound: String = "Pala"
     
     let synthesizer = AVSpeechSynthesizer()
     
@@ -27,6 +27,7 @@ struct EjercicioPeloView: View {
                     HStack {
                         Button {} label: {
                             Image(systemName: "house.fill")
+                                .font(.title3)
                                 .padding(15)
                                 .background(Color.yellowa)
                                 .cornerRadius(15)
@@ -74,7 +75,7 @@ struct EjercicioPeloView: View {
                         Spacer()
                         
                         NavigationLink {
-                            EjercicioPelo()
+                            EjercicioPala()
                         } label: {
                             Image(systemName: "arrow.right")
                                 .font(.system(size: 35, weight: .bold))
@@ -102,6 +103,6 @@ struct EjercicioPeloView: View {
 }
 
 #Preview {
-    EjercicioPeloView()
+    EjercicioPalaView()
         .previewInterfaceOrientation(.landscapeLeft)
 }

@@ -146,7 +146,7 @@ struct PhraseText: View {
 struct WordMatchView: View {
 
     let exercise: WordMatchExercise
-    let onFinish: () -> Void
+   
 
     @State private var selectedSyllable: String? = nil
     @State private var slot1: String? = nil
@@ -208,7 +208,9 @@ struct WordMatchView: View {
                 // RIGHT: Next arrow
                 VStack {
                     Spacer()
-                    Button(action: { onFinish() }) {
+                    Button(action: {
+                        
+                    }) {
                         Image(systemName: "arrow.right")
                             .font(.title2)
                             .foregroundColor(.typography)
@@ -402,12 +404,12 @@ struct ShakeOffsetModifier: ViewModifier {
             bottomSyllables: ["LA", "LE", "LI", "LO", "LU"],
             validWords: [
                 "PELO": "Mi pelo es café.",
-                "PALO": "El palo es largo.",
-                "PILA": "La pila está llena.",
+                "PALO": "El palo es de madera.",
+                "PILA": "La pila está cargada.",
                 "LUPA": "La lupa es útil.",
                 "POPO": "El bebé hizo popó.",
-                "PAPA": "Mi papa tiene mucho sabor",
-                "PIPI": "Tengo ganas de hacer pipí.",
+                "PAPA": "Mi papa sabe a ajo",
+                "PIPI": "Quiero hacer pipí.",
                 "LUPE": "Lupe es mi amiga.",
                 "PELA": "Pela la manzana.",
                 "POLO": "El polo es frío.",
@@ -416,7 +418,7 @@ struct ShakeOffsetModifier: ViewModifier {
             ],
             highlightWord: "pelo"
         ),
-        onFinish: {}
+        
     )
     .previewInterfaceOrientation(.landscapeLeft)
 }

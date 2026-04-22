@@ -1,5 +1,5 @@
 //
-//  EjercicioPeloView.swift
+//  EjercicioLupaView.swift
 //  Senda
 //
 //  Created by Citlalli Jaramar Lopez Medina on 22/04/26.
@@ -7,25 +7,23 @@
 import SwiftUI
 import AVFoundation
 
-struct EjercicioPeloView: View {
+struct EjercicioLupaView: View {
     
-    let imagenNombre: String = "pelo"
-    let wordText: String = "Pelo"
-    let wordSound: String = "Pelo"
+    let imagenNombre: String = "lupa"
+    let wordText: String = "Lupa"
+    let wordSound: String = "Lupa"
     
     let synthesizer = AVSpeechSynthesizer()
     
     var body: some View {
         NavigationStack {
             ZStack {
-                
-                Color("Background")
-                    .ignoresSafeArea()
+                Color("Background").ignoresSafeArea()
                 
                 VStack {
                     
                     HStack {
-                        Button {} label: {
+                        Button { } label: {
                             Image(systemName: "house.fill")
                                 .padding(15)
                                 .background(Color.yellowa)
@@ -74,7 +72,7 @@ struct EjercicioPeloView: View {
                         Spacer()
                         
                         NavigationLink {
-                            EjercicioPelo()
+                            EjercicioLupa()
                         } label: {
                             Image(systemName: "arrow.right")
                                 .font(.system(size: 35, weight: .bold))
@@ -100,8 +98,7 @@ struct EjercicioPeloView: View {
         synthesizer.speak(u)
     }
 }
-
 #Preview {
-    EjercicioPeloView()
+    EjercicioLupaView()
         .previewInterfaceOrientation(.landscapeLeft)
 }

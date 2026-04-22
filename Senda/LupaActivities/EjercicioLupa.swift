@@ -1,5 +1,5 @@
 //
-//  EjercicioPelo.swift
+//  EjercicioLupa.swift
 //  Senda
 //
 //  Created by Daniel Paredes on 22/04/26.
@@ -7,7 +7,34 @@
 import SwiftUI
 import AVFoundation
 
-struct EjercicioPelo: View {
+struct BotonLupa: View {
+    
+    let texto: String
+    let colorBase: Color
+    let accion: () -> Void
+    
+    var body: some View {
+        Button(action: accion) {
+            VStack(spacing: 15) {
+                Image(systemName: "speaker.wave.2.fill")
+                    .font(.system(size: 35))
+                
+                Text(texto)
+                    .font(.system(size: 80, weight: .light))
+            }
+            .foregroundColor(.typography)
+            .frame(width: 260, height: 260)
+            .background(colorBase.opacity(0.5))
+            .cornerRadius(30)
+            .overlay(
+                RoundedRectangle(cornerRadius: 30)
+                    .stroke(colorBase, lineWidth: 3)
+            )
+        }
+    }
+}
+
+struct EjercicioLupa: View {
     
     let synthesizer = AVSpeechSynthesizer()
     
@@ -30,23 +57,21 @@ struct EjercicioPelo: View {
                 }
                 .padding(.horizontal, 40)
                 .padding(.top, 20)
-
+                
                 Spacer()
                 
                 HStack(spacing: 30) {
                     
-                    BotonPelo(texto: "Pe", colorBase: .yellowa) {
-                        speak("pe")
+                    BotonLupa(texto: "Lu", colorBase: .yellowa) {
+                        speak("lu")
                     }
                     
-                    BotonPelo(texto: "lo", colorBase: .yellowa) {
-                        speak("lo")
+                    BotonLupa(texto: "pa", colorBase: .yellowa) {
+                        speak("pa")
                     }
                     
                     NavigationLink {
-                        WordTracingPelo(word: "Pelo") {
-                            
-                        }
+                        WordTracingLupa()
                     } label: {
                         Image(systemName: "arrow.right")
                             .font(.system(size: 35, weight: .bold))
@@ -69,35 +94,6 @@ struct EjercicioPelo: View {
         synthesizer.speak(u)
     }
 }
-
-struct BotonPelo: View {
-    
-    let texto: String
-    let colorBase: Color
-    let accion: () -> Void
-    
-    var body: some View {
-        Button(action: accion) {
-            VStack(spacing: 15) {
-                
-                Image(systemName: "speaker.wave.2.fill")
-                    .font(.system(size: 35))
-                
-                Text(texto)
-                    .font(.custom("Lexend-Light", size: 90))
-            }
-            .foregroundColor(.typography)
-            .frame(width: 260, height: 260)
-            .background(colorBase.opacity(0.5))
-            .cornerRadius(30)
-            .overlay(
-                RoundedRectangle(cornerRadius: 30)
-                    .stroke(colorBase, lineWidth: 3)
-            )
-        }
-    }
-}
-
 #Preview {
-    EjercicioPelo()
+    EjercicioLupa()
 }
