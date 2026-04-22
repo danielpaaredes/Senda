@@ -11,7 +11,7 @@ import SwiftUI
 struct SendaApp: App {
     var body: some Scene {
         WindowGroup {
-            VowelLearning()
+            LaunchView()
         }
     }
 }
