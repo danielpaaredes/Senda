@@ -17,7 +17,6 @@ struct VowelSelectionView: View {
     @State private var currentIndex = 0
     
     let synthesizer = AVSpeechSynthesizer()
-    
     let vowels = ["Aa", "Ee", "Ii", "Oo", "Uu"]
     
     let vowelSounds = [
@@ -33,94 +32,96 @@ struct VowelSelectionView: View {
     }
     
     var body: some View {
-        ZStack {
-            Color.background
-                .ignoresSafeArea()
-            
-            VStack {
+        NavigationStack { // 🔥 Agregamos NavigationStack para permitir la navegación
+            ZStack {
+                Color.background
+                    .ignoresSafeArea()
                 
-                // HOME
-                HStack {
-                    Button(action: {}) {
-                        Image(systemName: "house.fill")
-                            .font(.title)
-                            .foregroundColor(.typography)
-                            .padding()
-                            .background(Color.yellowa)
-                            .cornerRadius(15)
-                    }
-                    Spacer()
-                }
-                .padding()
-                
-                Spacer()
-                
-                // SPEAKER
-                Button(action: {
-                    playCurrentVowel()
-                }) {
-                    Image(systemName: "speaker.wave.2.fill")
-                        .font(.system(size: 50))
-                        .foregroundColor(.typography)
-                        .padding(30)
-                        .background(Color.yellowa)
-                        .cornerRadius(18)
-                }
-                
-                Spacer()
-                
-                // VOCAL BUTTONS (MEJORADOS)
-                HStack(spacing: 16) {
-                    ForEach(vowels, id: \.self) { vowel in
-                        VowelButton(
-                            text: vowel,
-                            isSelected: selectedVowel == vowel,
-                            isCorrect: isCorrect && selectedVowel == vowel
-                        )
-                        .onTapGesture {
-                            guard !showNextButton else { return }
-                            selectedVowel = vowel
-                            isCorrect = false
-                            speakLetter(vowel)
+                VStack {
+                    // HOME
+                    HStack {
+                        Button(action: {
+                            // Acción para ir al inicio
+                        }) {
+                            Image(systemName: "house.fill")
+                                .font(.title)
+                                .foregroundColor(.typography)
+                                .padding()
+                                .background(Color.yellowa)
+                                .cornerRadius(15)
                         }
-                        .onTapGesture(count: 2) {
-                            guard !showNextButton else { return }
-                            confirmSelection()
-                        }
+                        Spacer()
                     }
-                }
-                .padding(.horizontal)
-                
-                Spacer()
-            }
-            
-            // NEXT BUTTON
-            if showNextButton {
-                HStack {
+                    .padding()
+                    
                     Spacer()
                     
+                    // SPEAKER
                     Button(action: {
-                        // aquí puedes seguir a otra pantalla si quieres
+                        playCurrentVowel()
                     }) {
-                        Image(systemName: "arrow.right")
-                            .font(.title)
+                        Image(systemName: "speaker.wave.2.fill")
+                            .font(.system(size: 50))
                             .foregroundColor(.typography)
-                            .padding(.horizontal, 40)
-                            .padding(.vertical, 20)
+                            .padding(30)
                             .background(Color.yellowa)
-                            .cornerRadius(20)
+                            .cornerRadius(18)
                     }
-                    .padding(.trailing, 30)
+                    
+                    Spacer()
+                    
+                    // VOCAL BUTTONS
+                    HStack(spacing: 16) {
+                        ForEach(vowels, id: \.self) { vowel in
+                            VowelButton(
+                                text: vowel,
+                                isSelected: selectedVowel == vowel,
+                                isCorrect: isCorrect && selectedVowel == vowel
+                            )
+                            .onTapGesture {
+                                guard !showNextButton else { return }
+                                selectedVowel = vowel
+                                isCorrect = false
+                                speakLetter(vowel)
+                            }
+                            .onTapGesture(count: 2) {
+                                guard !showNextButton else { return }
+                                confirmSelection()
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                    
+                    Spacer()
+                }
+                
+                // NEXT BUTTON (Flecha para pasar a EjercicioPalaView)
+                if showNextButton {
+                    HStack {
+                        Spacer()
+                        
+                        NavigationLink(destination: EjercicioPalaView()) { // 🔥 Conexión a la siguiente vista
+                            Image(systemName: "arrow.right")
+                                .font(.title)
+                                .foregroundColor(.typography)
+                                .padding(.horizontal, 40)
+                                .padding(.vertical, 20)
+                                .background(Color.yellowa)
+                                .cornerRadius(20)
+                        }
+                        .padding(.trailing, 30)
+                    }
                 }
             }
-        }
-        .onAppear {
-            playCurrentVowel()
-        }
-        .sheet(isPresented: $showTracingView) {
-            VowelTracingView(vowel: currentVowel) {
-                showTracingView = false
-                nextVowel()
+            .onAppear {
+                playCurrentVowel()
+            }
+            // Suponiendo que VowelTracingView es otra vista que ya tienes definida
+            .sheet(isPresented: $showTracingView) {
+                VowelTracingView(vowel: currentVowel) {
+                    showTracingView = false
+                    nextVowel()
+                }
             }
         }
     }
@@ -160,7 +161,7 @@ struct VowelSelectionView: View {
             playCurrentVowel()
         } else {
             showNextButton = true
-            speak("Terminaste")
+            speak("Terminaste, presiona la flecha para continuar")
         }
     }
     
@@ -171,6 +172,8 @@ struct VowelSelectionView: View {
         synthesizer.speak(utterance)
     }
 }
+
+// MARK: - Componente VowelButton
 struct VowelButton: View {
     let text: String
     let isSelected: Bool

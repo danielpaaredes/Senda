@@ -27,7 +27,6 @@ struct WordTracingPelo: View {
                     Spacer()
                     
                     ZStack {
-                        
                         Text("Pelo")
                             .font(.system(size: 120, weight: .bold))
                             .foregroundColor(.gray.opacity(0.3))
@@ -43,7 +42,7 @@ struct WordTracingPelo: View {
                     
                     Spacer()
                     
-                    // 🔥 NAVEGACIÓN CORRECTA
+                    // 🔥 NAVEGACIÓN CORREGIDA CON ARGUMENTOS FALTANTES
                     NavigationLink {
                         WordMatchView(
                             exercise: WordMatchExercise(
@@ -64,7 +63,19 @@ struct WordTracingPelo: View {
                                     "PALA": "La pala es pesada."
                                 ],
                                 highlightWord: "pelo"
-                            )
+                            ),
+                            // Aquí pasamos los "Missing Arguments"
+                            nextExercise: ImageWordExercise(
+                                imageName: "palo", // Asegúrate de tener esta imagen en Assets
+                                correctWord: "Palo",
+                                options: ["Pepe", "Palo", "Popo"],
+                                nextExercise: SentenceBuilderExercise(
+                                    sentence: "Lupe pela la papa",
+                                    words: ["pela", "papa", "Lupe", "la"],
+                                    correctOrder: ["Lupe", "pela", "la", "papa"]
+                                )
+                            ),
+                            onFinish: onFinished
                         )
                     } label: {
                         Image(systemName: "arrow.right")
@@ -90,6 +101,12 @@ struct WordTracingPelo: View {
         u.voice = AVSpeechSynthesisVoice(language: "es-MX")
         u.rate = 0.4
         synthesizer.speak(u)
+    }
+}
+
+#Preview {
+    WordTracingPelo(word: "Pelo") {
+        print("Finalizado")
     }
 }
 #Preview {

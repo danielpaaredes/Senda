@@ -8,18 +8,15 @@ import SwiftUI
 import AVFoundation
 
 // MARK: - Model
-
 struct ImageWordExercise {
     let imageName: String
     let correctWord: String
     let options: [String]
-    let nextExercise: SentenceBuilderExercise  // ejercicio que sigue
+    let nextExercise: SentenceBuilderExercise
 }
 
 // MARK: - View
-
 struct ImageWordSelectionView: View {
-
     let exercise: ImageWordExercise
     let onFinish: () -> Void
 
@@ -35,7 +32,7 @@ struct ImageWordSelectionView: View {
             Color.background
                 .ignoresSafeArea()
 
-            // NavigationLink invisible
+            // NavigationLink invisible hacia el constructor de oraciones
             NavigationLink(
                 destination: SentenceBuilderView(
                     exercise: exercise.nextExercise,
@@ -47,34 +44,26 @@ struct ImageWordSelectionView: View {
             }
 
             HStack(spacing: 0) {
-
-                // LEFT: Home button
+                // LEFT: Home
                 VStack {
                     Button(action: {}) {
                         Image(systemName: "house.fill")
-                            .font(.callout)
-                            .foregroundColor(.typography)
-                            .padding(10)
-                            .background(Color.yellowa)
-                            .cornerRadius(10)
+                            .font(.callout).foregroundColor(.typography)
+                            .padding(10).background(Color.yellowa).cornerRadius(10)
                     }
                     Spacer()
-                }
-                .padding(12)
+                }.padding(12)
 
-                
+                // CENTER: Imagen
                 VStack {
                     Spacer()
                     Image(exercise.imageName)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(maxWidth: 420, maxHeight: 340)
-                        .cornerRadius(24)
+                        .resizable().scaledToFit()
+                        .frame(maxWidth: 420, maxHeight: 340).cornerRadius(24)
                     Spacer()
-                }
-                .frame(maxWidth: .infinity)
+                }.frame(maxWidth: .infinity)
 
-                
+                // RIGHT: Opciones
                 VStack(alignment: .leading, spacing: 20) {
                     Spacer()
                     ForEach(exercise.options, id: \.self) { word in
@@ -87,38 +76,25 @@ struct ImageWordSelectionView: View {
                         .onTapGesture(count: 2) { handleDoubleTap(word) }
                     }
                     Spacer()
-                }
-                .padding(.leading, 8)
-                .modifier(ShakeOffsetModifier(trigger: shakeOptions))
+                }.padding(.leading, 8).modifier(ShakeOffsetModifier(trigger: shakeOptions))
 
-              
+                // NEXT BUTTON
                 VStack {
                     Spacer()
-                    Button(action: {
-                        navigateToSentence = true
-                    }) {
-                        Image(systemName: "arrow.right")
-                            .font(.title2)
-                            .foregroundColor(.typography)
-                            .padding(.horizontal, 28)
-                            .padding(.vertical, 20)
-                            .background(Color.yellowa)
-                            .cornerRadius(16)
+                    Button(action: { navigateToSentence = true }) {
+                        Image(systemName: "arrow.right").font(.title2).foregroundColor(.typography)
+                            .padding(.horizontal, 28).padding(.vertical, 20)
+                            .background(Color.yellowa).cornerRadius(16)
                     }
                     Spacer()
-                }
-                .padding(12)
+                }.padding(12)
             }
         }
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                speak(exercise.correctWord)
-            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { speak(exercise.correctWord) }
         }
     }
-
-    // MARK: Logic
 
     func handleSingleTap(_ word: String) {
         guard confirmedWord == nil else { return }
@@ -135,17 +111,13 @@ struct ImageWordSelectionView: View {
         } else {
             speak("Inténtalo de nuevo")
             triggerShake()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                selectedWord = nil
-            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { selectedWord = nil }
         }
     }
 
     func triggerShake() {
         shakeOptions = false
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            shakeOptions = true
-        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { shakeOptions = true }
     }
 
     func speak(_ text: String) {
@@ -158,7 +130,6 @@ struct ImageWordSelectionView: View {
 }
 
 // MARK: - Word Option Button
-
 struct WordOptionButton: View {
     let text: String
     let isSelected: Bool
@@ -170,25 +141,13 @@ struct WordOptionButton: View {
         return Color.white
     }
 
-    var borderColor: Color { isConfirmed ? Color.green : Color.yellowa }
-    var textColor: Color   { isConfirmed ? Color.green : Color(.typography) }
-
     var body: some View {
-        Text(text)
-            .font(.title.weight(.medium))
-            .foregroundColor(textColor)
-            .frame(width: 220, height: 72)
-            .background(backgroundColor)
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(borderColor, lineWidth: 4)
-            )
+        Text(text).font(.title.weight(.medium)).foregroundColor(isConfirmed ? .green : .typography)
+            .frame(width: 220, height: 72).background(backgroundColor)
+            .overlay(RoundedRectangle(cornerRadius: 20).stroke(isConfirmed ? Color.green : Color.yellowa, lineWidth: 4))
             .cornerRadius(20)
-            .animation(.easeInOut(duration: 0.2), value: isConfirmed)
-            .animation(.easeInOut(duration: 0.15), value: isSelected)
     }
 }
-
 // MARK: - Preview
 
 #Preview {
