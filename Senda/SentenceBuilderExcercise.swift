@@ -1,14 +1,7 @@
-//
-//  SentenceBuilderExcercise.swift
-//  Senda
-//
-//  Created by Daniel Paredes on 22/04/26.
-//
 import SwiftUI
 import AVFoundation
 
 // MARK: - Model
-
 struct SentenceBuilderExercise {
     let sentence: String
     let words: [String]
@@ -16,9 +9,7 @@ struct SentenceBuilderExercise {
 }
 
 // MARK: - View
-
 struct SentenceBuilderView: View {
-
     let exercise: SentenceBuilderExercise
     let onFinish: () -> Void
 
@@ -27,8 +18,11 @@ struct SentenceBuilderView: View {
     @State private var availableWords: [String]
     @State private var isComplete: Bool = false
     @State private var shakeSlotIndex: Int? = nil
+    
+    @State private var goToLecciones = false
 
     let synthesizer = AVSpeechSynthesizer()
+    let yellowa = Color(red: 1.0, green: 0.749, blue: 0.0)
 
     init(exercise: SentenceBuilderExercise, onFinish: @escaping () -> Void) {
         self.exercise = exercise
@@ -42,107 +36,110 @@ struct SentenceBuilderView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            Color.background
-                .ignoresSafeArea()
+        NavigationStack {
+            ZStack(alignment: .topLeading) {
+                Color(red: 0.96, green: 0.96, blue: 0.96)
+                    .ignoresSafeArea()
 
-            // HOME — esquina superior izquierda flotando
-            Button(action: {}) {
-                Image(systemName: "house.fill")
-                    .font(.callout)
-                    .foregroundColor(.typography)
-                    .padding(10)
-                    .background(Color.yellowa)
-                    .cornerRadius(10)
-            }
-            .padding(16)
-            .zIndex(1)
+                // HOME
+                Button(action: { onFinish() }) {
+                    Image(systemName: "house.fill")
+                        .font(.title2)
+                        .foregroundColor(.black)
+                        .padding(15)
+                        .background(yellowa)
+                        .cornerRadius(15)
+                }
+                .padding(20)
+                .zIndex(1)
 
-            // MAIN CONTENT
-            VStack(spacing: 0) {
+                VStack(spacing: 0) {
+                    // SPEAKER
+                    HStack {
+                        Spacer()
+                        Button(action: { speakSentence() }) {
+                            Image(systemName: "speaker.wave.2.fill")
+                                .font(.system(size: 50))
+                                .foregroundColor(.black)
+                                .padding(30)
+                                .background(yellowa)
+                                .cornerRadius(25)
+                        }
+                        Spacer()
+                    }
+                    .padding(.top, 40)
 
-                // SPEAKER — centrado arriba
+                    Spacer()
+
+                    // SLOTS ROW
+                    HStack(alignment: .bottom, spacing: 40) {
+                        ForEach(0..<slots.count, id: \.self) { index in
+                            SlotView(
+                                word: slots[index],
+                                isShaking: shakeSlotIndex == index,
+                                isComplete: isComplete
+                            )
+                            .onTapGesture {
+                                returnWordFromSlot(at: index)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 40)
+
+                    Spacer()
+
+                    // WORD BANK
+                    HStack(spacing: 20) {
+                        ForEach(availableWords, id: \.self) { word in
+                            WordBankButton(
+                                text: word,
+                                isSelected: selectedWord == word,
+                                yellowa: yellowa
+                            )
+                            .onTapGesture {
+                                handleSingleTap(word)
+                            }
+                            .onTapGesture(count: 2) {
+                                handleDoubleTap(word)
+                            }
+                        }
+                    }
+                    .padding(.bottom, 50)
+                }
+
+                // NEXT ARROW
                 HStack {
                     Spacer()
-                    Button(action: { speakSentence() }) {
-                        Image(systemName: "speaker.wave.2.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(.typography)
-                            .padding(22)
-                            .background(Color.yellowa)
-                            .cornerRadius(20)
-                    }
-                    Spacer()
-                }
-                .padding(.top, 28)
-
-                Spacer()
-
-                // SLOTS ROW — líneas largas con texto encima
-                HStack(alignment: .bottom, spacing: 32) {
-                    ForEach(0..<slots.count, id: \.self) { index in
-                        SlotView(
-                            word: slots[index],
-                            isShaking: shakeSlotIndex == index,
-                            isComplete: isComplete
-                        )
-                        .onTapGesture {
-                            returnWordFromSlot(at: index)
+                    VStack {
+                        Spacer()
+                        Button(action: {
+                            goToLecciones = true
+                        }) {
+                            Image(systemName: "arrow.right")
+                                .font(.system(size: 40, weight: .bold))
+                                .foregroundColor(.black)
+                                .padding(.horizontal, 40)
+                                .padding(.vertical, 25)
+                                .background(yellowa)
+                                .cornerRadius(20)
+                                .shadow(radius: 5)
                         }
+                        Spacer()
                     }
                 }
-                .padding(.horizontal, 40)
-
-                Spacer()
-
-                // WORD BANK — centrado abajo
-                HStack(spacing: 12) {
-                    ForEach(availableWords, id: \.self) { word in
-                        WordBankButton(
-                            text: word,
-                            isSelected: selectedWord == word
-                        )
-                        .onTapGesture {
-                            handleSingleTap(word)
-                        }
-                        .onTapGesture(count: 2) {
-                            handleDoubleTap(word)
-                        }
-                    }
-                }
-                .padding(.bottom, 36)
+                .padding(.trailing, 30)
             }
-
-            // NEXT ARROW — derecha centrada verticalmente
-            HStack {
-                Spacer()
-                VStack {
-                    Spacer()
-                    Button(action: {
-                        // TODO: conectar navegación
-                    }) {
-                        Image(systemName: "arrow.right")
-                            .font(.title2)
-                            .foregroundColor(.typography)
-                            .padding(.horizontal, 28)
-                            .padding(.vertical, 20)
-                            .background(Color.yellowa)
-                            .cornerRadius(16)
-                    }
-                    Spacer()
-                }
+            .navigationDestination(isPresented: $goToLecciones) {
+                LeccionesSimuladasView()
             }
-            .padding(.trailing, 16)
-        }
-        .toolbar(.hidden, for: .navigationBar)
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                speakSentence()
+            .toolbar(.hidden, for: .navigationBar)
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    speakSentence()
+                }
             }
         }
     }
-
-    // MARK: - Logic
 
     func handleSingleTap(_ word: String) {
         guard !isComplete else { return }
@@ -175,12 +172,10 @@ struct SentenceBuilderView: View {
             speak("¡Muy bien!")
         } else {
             speak("Inténtalo de nuevo")
-            if let wrongIndex = zip(formed, exercise.correctOrder)
-                .enumerated()
-                .first(where: { $0.element.0 != $0.element.1 })?.offset {
+            if let wrongIndex = zip(formed, exercise.correctOrder).enumerated().first(where: { $0.element.0 != $0.element.1 })?.offset {
                 triggerShake(at: wrongIndex)
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
                 availableWords = exercise.words
                 slots = Array(repeating: nil, count: exercise.correctOrder.count)
             }
@@ -189,9 +184,7 @@ struct SentenceBuilderView: View {
 
     func triggerShake(at index: Int) {
         shakeSlotIndex = nil
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            shakeSlotIndex = index
-        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { shakeSlotIndex = index }
     }
 
     func speakSentence() { speak(exercise.sentence) }
@@ -205,78 +198,52 @@ struct SentenceBuilderView: View {
     }
 }
 
-// MARK: - Slot View
-
 struct SlotView: View {
     let word: String?
     let isShaking: Bool
     let isComplete: Bool
-
     var body: some View {
-        VStack(spacing: 8) {
-            // Texto encima de la línea
+        VStack(spacing: 12) {
             Text(word ?? " ")
-                .font(.system(size: 28, weight: .medium))
-                .foregroundColor(isComplete ? .green : .typography)
-                .opacity(word == nil ? 0 : 1)
-                .frame(minWidth: 90)
-                .animation(.easeInOut(duration: 0.15), value: word)
-
-            // Línea larga debajo
+                .font(.system(size: 35, weight: .bold)) // Fuente de sistema
+                .foregroundColor(isComplete ? .green : .black)
+                .frame(minWidth: 120)
             Rectangle()
-                .frame(width: 120, height: 3)
-                .foregroundColor(isComplete ? .green : .typography)
+                .frame(width: 150, height: 4)
+                .foregroundColor(isComplete ? .green : .black)
         }
         .modifier(SlotShakeModifier(trigger: isShaking))
-        .animation(.easeInOut(duration: 0.2), value: isComplete)
     }
 }
-
-// MARK: - Word Bank Button
 
 struct WordBankButton: View {
     let text: String
     let isSelected: Bool
-
+    let yellowa: Color
     var body: some View {
         Text(text)
-            .font(.system(size: 22, weight: .medium))
-            .foregroundColor(.typography)
-            .padding(.horizontal, 18)
-            .padding(.vertical, 12)
-            .background(isSelected ? Color.yellowa : Color.white)
-            .overlay(
-                RoundedRectangle(cornerRadius: 14)
-                    .stroke(Color.yellowa, lineWidth: 3)
-            )
-            .cornerRadius(14)
-            .animation(.easeInOut(duration: 0.15), value: isSelected)
+            .font(.system(size: 30, weight: .bold)) // Fuente de sistema
+            .foregroundColor(.black)
+            .padding(.horizontal, 25)
+            .padding(.vertical, 15)
+            .background(isSelected ? yellowa : Color.white)
+            .cornerRadius(20)
+            .overlay(RoundedRectangle(cornerRadius: 20).stroke(yellowa, lineWidth: 4))
     }
 }
-
-// MARK: - Slot Shake Modifier
 
 struct SlotShakeModifier: ViewModifier {
     let trigger: Bool
     @State private var xOffset: CGFloat = 0
-
     func body(content: Content) -> some View {
-        content
-            .offset(x: xOffset)
-            .onChange(of: trigger) { newValue in
-                if newValue {
-                    withAnimation(.linear(duration: 0.06).repeatCount(5, autoreverses: true)) {
-                        xOffset = 10
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        xOffset = 0
-                    }
-                }
+        content.offset(x: xOffset).onChange(of: trigger) { newValue in
+            if newValue {
+                withAnimation(.linear(duration: 0.06).repeatCount(5, autoreverses: true)) { xOffset = 10 }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { xOffset = 0 }
             }
+        }
     }
 }
-
-// MARK: - Preview
 
 #Preview {
     SentenceBuilderView(
