@@ -12,8 +12,9 @@ struct OnboardingInclusivoView: View {
     let synthesizer = AVSpeechSynthesizer()
     @State private var step = 0
     
-    // --- ESTADO PARA LA ANIMACIÓN ---
+    // --- ESTADO PARA NAVEGACIÓN Y ANIMACIÓN ---
     @State private var isPulsing = false
+    @State private var shouldNavigate = false // Controla el cambio de pantalla
     
     let instrucciones = [
         "Escucha mis instrucciones con atención.",
@@ -23,86 +24,75 @@ struct OnboardingInclusivoView: View {
     ]
     
     var body: some View {
-        ZStack {
-            Color("Background").ignoresSafeArea()
-            
-            VStack(spacing: 50) {
-                Text("Bienvenido a Senda")
-                    .font(.system(size: 45, weight: .bold, design: .rounded))
-                    .foregroundColor(Color.typography)
-                    .padding(.top, 40)
+        NavigationStack { // Agregado para permitir la navegación
+            ZStack {
+                Color("Background").ignoresSafeArea()
                 
-                Spacer()
-                
-                HStack(spacing: 60) {
-                    
-                    ExplicacionIconoView(
-                        imageName: "house.fill",
-                        isHighlighted: step >= 1,
-                        color: Color.yellowa
-                    )
-                    
-                    ExplicacionIconoView(
-                        imageName: "checkmark.circle.fill",
-                        isHighlighted: step >= 2,
-                        color: Color.yellowa
-                    )
-                    
-                    ExplicacionIconoView(
-                        imageName: "arrow.right",
-                        isHighlighted: step >= 3,
-                        color: Color.yellowa
-                    )
-                }
-                
-                Spacer()
-                
-                // --- BOTÓN DE AVANCE CON ANIMACIÓN DE PULSACIÓN ---
-                Button(action: {
-                    // Al presionar, detenemos la animación para dar feedback visual de 'toque'
-                    withAnimation(.easeOut(duration: 0.2)) {
-                        isPulsing = false
-                    }
-                    
-                    if step < instrucciones.count - 1 {
-                        step += 1
-                        speak(instrucciones[step])
-                    } else {
-                        // Navegación al ejercicio
-                    }
-                }) {
-                    Image(systemName: "hand.point.up.fill")
-                        .font(.system(size: 55, weight: .bold))
+                VStack(spacing: 50) {
+                    Text("Bienvenido a Senda")
+                        .font(.system(size: 45, weight: .bold, design: .rounded))
                         .foregroundColor(Color.typography)
-                        .frame(width: 220, height: 110)
-                        .background(Color.yellowa)
-                        .cornerRadius(40)
-                        .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
-                        
-                        // --- APLICACIÓN DE LA ANIMACIÓN ---
-                        // Cambiamos la opacidad y la escala suavemente
-                        .opacity(isPulsing ? 0.6 : 1.0)
-                        .scaleEffect(isPulsing ? 0.95 : 1.0)
-                        
-                        // Animación implícita que se repite para siempre
-                        .animation(
-                            Animation.easeInOut(duration: 1.0)
-                                .repeatForever(autoreverses: true),
-                            value: isPulsing
+                        .padding(.top, 40)
+                    
+                    Spacer()
+                    
+                    HStack(spacing: 60) {
+                        ExplicacionIconoView(
+                            imageName: "house.fill",
+                            isHighlighted: step >= 1,
+                            color: Color.yellowa
                         )
+                        
+                        ExplicacionIconoView(
+                            imageName: "checkmark.circle.fill",
+                            isHighlighted: step >= 2,
+                            color: Color.yellowa
+                        )
+                        
+                        ExplicacionIconoView(
+                            imageName: "arrow.right",
+                            isHighlighted: step >= 3,
+                            color: Color.yellowa
+                        )
+                    }
+                    
+                    Spacer()
+                    
+                    // --- BOTÓN DE AVANCE ---
+                    Button(action: {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            isPulsing = false
+                        }
+                        
+                        if step < instrucciones.count - 1 {
+                            step += 1
+                            speak(instrucciones[step])
+                        } else {
+                            // Al terminar las instrucciones, activamos la navegación
+                            shouldNavigate = true
+                        }
+                    }) {
+                        Image(systemName: "hand.point.up.fill")
+                            .font(.system(size: 55, weight: .bold))
+                            .foregroundColor(Color.typography)
+                            .frame(width: 220, height: 110)
+                            .background(Color.yellowa)
+                            .cornerRadius(40)
+                            .shadow(color: .black.opacity(0.15), radius: 10, x: 0, y: 5)
+                            .opacity(isPulsing ? 0.6 : 1.0)
+                            .scaleEffect(isPulsing ? 0.95 : 1.0)
+                            .animation(
+                                Animation.easeInOut(duration: 1.0)
+                                    .repeatForever(autoreverses: true),
+                                value: isPulsing
+                            )
+                    }
+                    .padding(.bottom, 70)
                 }
-                .padding(.bottom, 70)
             }
-        }
-        .onAppear {
-            speak(instrucciones[0])
-            
-            // --- INICIAMOS LA ANIMACIÓN AL APARECER LA VISTA ---
-            // Usamos un pequeño delay para que no empiece de golpe
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                withAnimation {
-                    isPulsing = true
-                }
+            // --- DESTINO DE NAVEGACIÓN ---
+            .navigationDestination(isPresented: $shouldNavigate) {
+                VowelLearning()
             }
         }
     }
@@ -117,7 +107,7 @@ struct OnboardingInclusivoView: View {
     }
 }
 
-// Subvista para los iconos explicativos (sin cambios)
+// Subvista para los iconos explicativos (Sin cambios)
 struct ExplicacionIconoView: View {
     let imageName: String
     let isHighlighted: Bool
@@ -134,7 +124,4 @@ struct ExplicacionIconoView: View {
                 .shadow(color: .black.opacity(isHighlighted ? 0.1 : 0), radius: 10)
         }
     }
-}
-#Preview {
-    OnboardingInclusivoView()
 }

@@ -17,22 +17,47 @@ struct WordTracingPelo: View {
     private let synthesizer = AVSpeechSynthesizer()
     
     var body: some View {
-        NavigationStack {   // 🔥 IMPORTANTE: SIN ESTO NO NAVEGA
-            
+        NavigationStack {
             ZStack {
                 Color.background.ignoresSafeArea()
                 
                 VStack {
+                    // Botón para borrar el trazo
+                    HStack {
+                        Button(action: { points.removeAll() }) {
+                            Label("Borrar", systemImage: "eraser.fill")
+                                .font(.headline)
+                                .foregroundColor(.typography)
+                                .padding()
+                                .background(Color.yellowa.opacity(0.3))
+                                .cornerRadius(15)
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal, 40)
                     
                     Spacer()
                     
+                    // ÁREA DE TRAZO
                     ZStack {
-                        Text("Pelo")
-                            .font(.system(size: 120, weight: .bold))
-                            .foregroundColor(.gray.opacity(0.3))
+                        // 1. Texto de guía (Fondo gris)
+                        Text(word)
+                            .font(.system(size: 150, weight: .bold)) // Un poco más grande para facilitar el trazo
+                            .foregroundColor(.gray.opacity(0.2))
+                        
+                        // 2. El "Lápiz" (Dibuja el camino de puntos)
+                        Path { path in
+                            guard let firstPoint = points.first else { return }
+                            path.move(to: firstPoint)
+                            for point in points {
+                                path.addLine(to: point)
+                            }
+                        }
+                        .stroke(Color.black, style: StrokeStyle(lineWidth: 15, lineCap: .round, lineJoin: .round))
                     }
-                    .frame(width: 350, height: 300)
-                    .contentShape(Rectangle())
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 400)
+                    .contentShape(Rectangle()) // Hace que toda el área sea sensible al toque
                     .gesture(
                         DragGesture(minimumDistance: 0)
                             .onChanged { value in
@@ -42,7 +67,7 @@ struct WordTracingPelo: View {
                     
                     Spacer()
                     
-                    // 🔥 NAVEGACIÓN CORREGIDA CON ARGUMENTOS FALTANTES
+                    // NAVEGACIÓN
                     NavigationLink {
                         WordMatchView(
                             exercise: WordMatchExercise(
@@ -64,9 +89,8 @@ struct WordTracingPelo: View {
                                 ],
                                 highlightWord: "pelo"
                             ),
-                            // Aquí pasamos los "Missing Arguments"
                             nextExercise: ImageWordExercise(
-                                imageName: "palo", // Asegúrate de tener esta imagen en Assets
+                                imageName: "palo",
                                 correctWord: "Palo",
                                 options: ["Pepe", "Palo", "Popo"],
                                 nextExercise: SentenceBuilderExercise(
@@ -79,19 +103,20 @@ struct WordTracingPelo: View {
                         )
                     } label: {
                         Image(systemName: "arrow.right")
-                            .font(.title)
+                            .font(.system(size: 35, weight: .bold))
                             .foregroundColor(.typography)
-                            .padding(.horizontal, 40)
+                            .padding(.horizontal, 50)
                             .padding(.vertical, 20)
                             .background(Color.yellowa)
-                            .cornerRadius(20)
+                            .cornerRadius(25)
+                            .shadow(radius: 5)
                     }
                     
                     Spacer()
                 }
             }
             .onAppear {
-                speak("Con tu dedo dibuja la palabra Pelo")
+                speak("Con tu dedo, dibuja la palabra \(word)")
             }
         }
     }
@@ -104,11 +129,6 @@ struct WordTracingPelo: View {
     }
 }
 
-#Preview {
-    WordTracingPelo(word: "Pelo") {
-        print("Finalizado")
-    }
-}
 #Preview {
     WordTracingPelo(word: "Pelo") {
         
