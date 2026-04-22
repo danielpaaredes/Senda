@@ -17,76 +17,76 @@ struct VowelLearning: View {
     ]
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                Color("Background")
-                    .ignoresSafeArea()
-                
-                VStack {
+        NavigationStack {
+            GeometryReader { geometry in
+                ZStack {
+                    Color("Background")
+                        .ignoresSafeArea()
                     
-                  
-                    HStack {
-                        Button(action: {
-                            
-                        }) {
-                            Image(systemName: "house.fill")
-                                .font(.title)
-                                .foregroundColor(Color.typography)
-                                .padding()
-                                .background(Color.yellowa)
-                                .cornerRadius(15)
-                        }
-                        Spacer()
-                    }
-                    .padding()
-                    
-                    Spacer()
-                    
-            
-                    HStack(spacing: 16) {
-                        ForEach(vowels, id: \.self) { vowel in
+                    VStack {
+                        
+                        // HOME BUTTON
+                        HStack {
                             Button(action: {
-                                selectedVowel = vowel
-                                speak(vowelSounds[vowel] ?? vowel)
+                                
                             }) {
-                                Text(vowel)
-                                    .font(.largeTitle.weight(.medium))
-                                    .foregroundColor(.black)
-                                    .minimumScaleFactor(0.5)
-                                    .padding(.horizontal, 25)
-                                    .padding(.vertical, 20)
-                                    .frame(maxWidth: .infinity)
-                                    .background(
-                                        selectedVowel == vowel
-                                        ? Color.yellowa.opacity(0.5)
-                                        : Color.white
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .stroke(Color.yellowa, lineWidth: 4)
-                                    )
-                                    .cornerRadius(20)
+                                Image(systemName: "house.fill")
+                                    .font(.title)
+                                    .foregroundColor(Color.typography)
+                                    .padding()
+                                    .background(Color.yellowa)
+                                    .cornerRadius(15)
+                            }
+                            Spacer()
+                        }
+                        .padding()
+                        
+                        Spacer()
+                        
+                        // VOWEL BUTTONS
+                        HStack(spacing: 16) {
+                            ForEach(vowels, id: \.self) { vowel in
+                                Button(action: {
+                                    selectedVowel = vowel
+                                    speak(vowelSounds[vowel] ?? vowel)
+                                }) {
+                                    Text(vowel)
+                                        .font(.largeTitle.weight(.medium))
+                                        .foregroundColor(.black)
+                                        .minimumScaleFactor(0.5)
+                                        .padding(.horizontal, 25)
+                                        .padding(.vertical, 20)
+                                        .frame(maxWidth: .infinity)
+                                        .background(
+                                            selectedVowel == vowel
+                                            ? Color.yellowa.opacity(0.5)
+                                            : Color.white
+                                        )
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .stroke(Color.yellowa, lineWidth: 4)
+                                        )
+                                        .cornerRadius(20)
+                                }
                             }
                         }
-                    }
-                    .padding(.horizontal)
-                    
-                    Spacer()
-                    
-         
-                    Button(action: {
+                        .padding(.horizontal)
                         
-                    }) {
-                        Image(systemName: "arrow.right")
-                            .font(.title)
-                            .foregroundColor(Color.typography)
-                            .padding(.horizontal, 40)
-                            .padding(.vertical, 20)
-                            .background(Color.yellowa)
-                            .cornerRadius(20)
+                        Spacer()
+                        
+                        // NEXT BUTTON
+                        NavigationLink(destination: VowelSelectionView()) {
+                            Image(systemName: "arrow.right")
+                                .font(.title)
+                                .foregroundColor(Color.typography)
+                                .padding(.horizontal, 40)
+                                .padding(.vertical, 20)
+                                .background(Color.yellowa)
+                                .cornerRadius(20)
+                        }
+                        
+                        Spacer()
                     }
-                    
-                    Spacer()
                 }
             }
         }

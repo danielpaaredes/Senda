@@ -129,6 +129,7 @@ struct VowelSelectionView: View {
                 nextVowel()
             }
         }
+        .toolbar(.hidden, for: .navigationBar)
     }
     
     func buttonColor(for vowel: String) -> Color {
