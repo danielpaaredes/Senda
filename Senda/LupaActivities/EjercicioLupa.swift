@@ -63,7 +63,7 @@ struct EjercicioLupa: View {
                 HStack(spacing: 30) {
                     
                     BotonLupa(texto: "Lu", colorBase: .yellowa) {
-                        speak("lu")
+                        speak("luh")
                     }
                     
                     BotonLupa(texto: "pa", colorBase: .yellowa) {
