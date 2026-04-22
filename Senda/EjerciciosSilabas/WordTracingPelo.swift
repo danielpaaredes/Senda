@@ -13,7 +13,8 @@ struct WordTracingPelo: View {
     let word: String
     var onFinished: () -> Void
     
-    @State private var points: [CGPoint] = []
+    // Ahora guardamos un arreglo de "líneas", donde cada línea es un arreglo de puntos
+    @State private var strokes: [[CGPoint]] = []
     private let synthesizer = AVSpeechSynthesizer()
     
     var body: some View {
@@ -22,46 +23,45 @@ struct WordTracingPelo: View {
                 Color.background.ignoresSafeArea()
                 
                 VStack {
-                    // Botón para borrar el trazo
-                    HStack {
-                        Button(action: { points.removeAll() }) {
-                            Label("Borrar", systemImage: "eraser.fill")
-                                .font(.headline)
-                                .foregroundColor(.typography)
-                                .padding()
-                                .background(Color.yellowa.opacity(0.3))
-                                .cornerRadius(15)
-                        }
-                        Spacer()
-                    }
-                    .padding(.horizontal, 40)
-                    
+                    // Quitamos el botón de borrador como pediste
                     Spacer()
                     
                     // ÁREA DE TRAZO
                     ZStack {
                         // 1. Texto de guía (Fondo gris)
                         Text(word)
-                            .font(.system(size: 150, weight: .bold)) // Un poco más grande para facilitar el trazo
+                            .font(.system(size: 150, weight: .bold))
                             .foregroundColor(.gray.opacity(0.2))
                         
-                        // 2. El "Lápiz" (Dibuja el camino de puntos)
-                        Path { path in
-                            guard let firstPoint = points.first else { return }
-                            path.move(to: firstPoint)
-                            for point in points {
-                                path.addLine(to: point)
+                        // 2. El "Lápiz" Multi-trazo
+                        Canvas { context, size in
+                            for stroke in strokes {
+                                var path = Path()
+                                if let firstPoint = stroke.first {
+                                    path.move(to: firstPoint)
+                                    path.addLines(stroke)
+                                }
+                                context.stroke(path, with: .color(.black), style: StrokeStyle(lineWidth: 12, lineCap: .round, lineJoin: .round))
                             }
                         }
-                        .stroke(Color.black, style: StrokeStyle(lineWidth: 15, lineCap: .round, lineJoin: .round))
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 400)
-                    .contentShape(Rectangle()) // Hace que toda el área sea sensible al toque
+                    .contentShape(Rectangle())
                     .gesture(
                         DragGesture(minimumDistance: 0)
                             .onChanged { value in
-                                points.append(value.location)
+                                // Si es el inicio de un toque, creamos un nuevo trazo
+                                if value.translation == .zero || strokes.isEmpty {
+                                    strokes.append([value.location])
+                                } else {
+                                    // Si ya estamos arrastrando, añadimos el punto al último trazo creado
+                                    let lastIndex = strokes.count - 1
+                                    strokes[lastIndex].append(value.location)
+                                }
+                            }
+                            .onEnded { _ in
+                                // Al soltar el dedo, podrías añadir lógica aquí si quisieras
                             }
                     )
                     
@@ -76,15 +76,6 @@ struct WordTracingPelo: View {
                                 validWords: [
                                     "PELO": "Mi pelo es café.",
                                     "PALO": "El palo es de madera.",
-                                    "PILA": "La pila está cargada.",
-                                    "LUPA": "La lupa es útil.",
-                                    "POPO": "El bebé hizo popó.",
-                                    "PAPA": "Mi papa sabe a ajo",
-                                    "PIPI": "Quiero hacer pipí.",
-                                    "LUPE": "Lupe es mi amiga.",
-                                    "PELA": "Pela la manzana.",
-                                    "POLO": "El polo es frío.",
-                                    "POLI": "El poli llegó.",
                                     "PALA": "La pala es pesada."
                                 ],
                                 highlightWord: "pelo"
