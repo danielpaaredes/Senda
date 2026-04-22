@@ -1,3 +1,9 @@
+//
+//  VowelSelectionView.swift
+//  Senda
+//
+//  Created by Daniel Paredes on 22/04/26.
+//
 import SwiftUI
 import AVFoundation
 
@@ -33,11 +39,9 @@ struct VowelSelectionView: View {
             
             VStack {
                 
-                // HOME BUTTON
+                // HOME
                 HStack {
-                    Button(action: {
-                        
-                    }) {
+                    Button(action: {}) {
                         Image(systemName: "house.fill")
                             .font(.title)
                             .foregroundColor(.typography)
@@ -51,7 +55,7 @@ struct VowelSelectionView: View {
                 
                 Spacer()
                 
-                // SPEAKER BUTTON
+                // SPEAKER
                 Button(action: {
                     playCurrentVowel()
                 }) {
@@ -60,39 +64,29 @@ struct VowelSelectionView: View {
                         .foregroundColor(.typography)
                         .padding(30)
                         .background(Color.yellowa)
-                        .clipShape(Rectangle())
                         .cornerRadius(18)
                 }
                 
                 Spacer()
                 
-                // VOWEL BUTTONS
+                // VOCAL BUTTONS (MEJORADOS)
                 HStack(spacing: 16) {
                     ForEach(vowels, id: \.self) { vowel in
-                        Text(vowel)
-                            .font(.largeTitle.weight(.medium))
-                            .foregroundColor(.typography)
-                            .padding(.horizontal, 25)
-                            .padding(.vertical, 20)
-                            .frame(maxWidth: .infinity)
-                            .background(buttonColor(for: vowel))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(Color.yellowa, lineWidth: 4)
-                            )
-                            .cornerRadius(20)
-                            .onTapGesture {
-                                if !showNextButton {
-                                    selectedVowel = vowel
-                                    isCorrect = false
-                                    speakLetter(vowel)
-                                }
-                            }
-                            .onTapGesture(count: 2) {
-                                if !showNextButton {
-                                    confirmSelection()
-                                }
-                            }
+                        VowelButton(
+                            text: vowel,
+                            isSelected: selectedVowel == vowel,
+                            isCorrect: isCorrect && selectedVowel == vowel
+                        )
+                        .onTapGesture {
+                            guard !showNextButton else { return }
+                            selectedVowel = vowel
+                            isCorrect = false
+                            speakLetter(vowel)
+                        }
+                        .onTapGesture(count: 2) {
+                            guard !showNextButton else { return }
+                            confirmSelection()
+                        }
                     }
                 }
                 .padding(.horizontal)
@@ -100,13 +94,13 @@ struct VowelSelectionView: View {
                 Spacer()
             }
             
-            // FINAL NEXT BUTTON RIGHT CENTER
+            // NEXT BUTTON
             if showNextButton {
                 HStack {
                     Spacer()
                     
                     Button(action: {
-                        
+                        // aquí puedes seguir a otra pantalla si quieres
                     }) {
                         Image(systemName: "arrow.right")
                             .font(.title)
@@ -129,15 +123,9 @@ struct VowelSelectionView: View {
                 nextVowel()
             }
         }
-        .toolbar(.hidden, for: .navigationBar)
     }
     
-    func buttonColor(for vowel: String) -> Color {
-        if selectedVowel == vowel {
-            return isCorrect ? .green : Color.yellowa.opacity(0.5)
-        }
-        return .white
-    }
+    // MARK: - LOGIC
     
     func playCurrentVowel() {
         if let sound = vowelSounds[currentVowel] {
@@ -156,7 +144,7 @@ struct VowelSelectionView: View {
             isCorrect = true
             speak("Correcto.")
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 showTracingView = true
             }
         } else {
@@ -172,7 +160,7 @@ struct VowelSelectionView: View {
             playCurrentVowel()
         } else {
             showNextButton = true
-            speak("Terminaste, selecciona la flecha para continuar.")
+            speak("Terminaste")
         }
     }
     
@@ -181,6 +169,42 @@ struct VowelSelectionView: View {
         utterance.voice = AVSpeechSynthesisVoice(language: "es-MX")
         utterance.rate = 0.4
         synthesizer.speak(utterance)
+    }
+}
+struct VowelButton: View {
+    let text: String
+    let isSelected: Bool
+    let isCorrect: Bool
+    
+    var backgroundColor: Color {
+        if isCorrect { return Color.green.opacity(0.2) }
+        if isSelected { return Color.yellowa }
+        return Color.white
+    }
+    
+    var borderColor: Color {
+        isCorrect ? Color.green : Color.yellowa
+    }
+    
+    var textColor: Color {
+        isCorrect ? Color.green : Color.typography
+    }
+    
+    var body: some View {
+        Text(text)
+            .font(.largeTitle.weight(.medium))
+            .foregroundColor(textColor)
+            .padding(.horizontal, 25)
+            .padding(.vertical, 20)
+            .frame(maxWidth: .infinity)
+            .background(backgroundColor)
+            .overlay(
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(borderColor, lineWidth: 4)
+            )
+            .cornerRadius(20)
+            .animation(.easeInOut(duration: 0.2), value: isSelected)
+            .animation(.easeInOut(duration: 0.2), value: isCorrect)
     }
 }
 

@@ -4,13 +4,14 @@
 //
 //  Created by Daniel Paredes on 22/04/26.
 //
-
 import SwiftUI
 import AVFoundation
 
 struct EjercicioPelo: View {
     
     let synthesizer = AVSpeechSynthesizer()
+    
+    @State private var showTracing = false
     
     var body: some View {
         ZStack {
@@ -45,9 +46,10 @@ struct EjercicioPelo: View {
                         speak("lo")
                     }
                     
-                    Button(action: {
-                        
-                    }) {
+                    // 👉 TRACING
+                    Button {
+                        showTracing = true
+                    } label: {
                         Image(systemName: "arrow.right")
                             .font(.system(size: 35, weight: .bold))
                             .frame(width: 120, height: 75)
@@ -60,17 +62,23 @@ struct EjercicioPelo: View {
                 Spacer()
             }
         }
+        
+        .sheet(isPresented: $showTracing) {
+            WordTracingView(word: "pelo") {
+                showTracing = false
+            }
+        }
     }
     
     func speak(_ text: String) {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "es-MX")
-        utterance.rate = 0.35
+        utterance.rate = 0.4
         synthesizer.speak(utterance)
     }
 }
-
 struct BotonPelo: View {
+    
     let texto: String
     let colorBase: Color
     let accion: () -> Void
@@ -78,6 +86,7 @@ struct BotonPelo: View {
     var body: some View {
         Button(action: accion) {
             VStack(spacing: 15) {
+                
                 Image(systemName: "speaker.wave.2.fill")
                     .font(.system(size: 35))
                 

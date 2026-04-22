@@ -11,6 +11,7 @@ import AVFoundation
 struct EjercicioLupa: View {
     
     let synthesizer = AVSpeechSynthesizer()
+    @State private var showTracing = false
     
     var body: some View {
         ZStack {
@@ -38,16 +39,16 @@ struct EjercicioLupa: View {
                 HStack(spacing: 30) {
                     
                     BotonLupa(texto: "Lu", colorBase: Color.yellowa) {
-                        speak("luh ")
+                        speak("luh")
                     }
                     
                     BotonLupa(texto: "pa", colorBase: Color.yellowa) {
                         speak("pa")
                     }
                     
-                    Button(action: {
-                        
-                    }) {
+                    Button {
+                        showTracing = true
+                    } label: {
                         Image(systemName: "arrow.right")
                             .font(.system(size: 35, weight: .bold))
                             .frame(width: 120, height: 75)
@@ -60,6 +61,11 @@ struct EjercicioLupa: View {
                 Spacer()
             }
         }
+        .sheet(isPresented: $showTracing) {
+            WordTracingView(word: "lupa") {
+                showTracing = false
+            }
+        }
     }
     
     func speak(_ text: String) {
@@ -69,8 +75,8 @@ struct EjercicioLupa: View {
         synthesizer.speak(utterance)
     }
 }
-
 struct BotonLupa: View {
+    
     let texto: String
     let colorBase: Color
     let accion: () -> Void
@@ -78,6 +84,7 @@ struct BotonLupa: View {
     var body: some View {
         Button(action: accion) {
             VStack(spacing: 15) {
+                
                 Image(systemName: "speaker.wave.2.fill")
                     .font(.system(size: 35))
                 
@@ -95,7 +102,6 @@ struct BotonLupa: View {
         }
     }
 }
-
 #Preview {
     EjercicioLupa()
 }
