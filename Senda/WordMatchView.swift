@@ -4,6 +4,7 @@
 //
 //  Created by Daniel Paredes on 22/04/26.
 //
+
 import SwiftUI
 import AVFoundation
 
@@ -24,8 +25,8 @@ struct WordMatchExercise {
 // MARK: - Main View
 struct WordMatchView: View {
     let exercise: WordMatchExercise
-    let nextExercise: ImageWordExercise // <--- Nuevo: El siguiente ejercicio
-    let onFinish: () -> Void            // <--- Nuevo: Acción al terminar el flujo
+    let nextExercise: ImageWordExercise
+    let onFinish: () -> Void
 
     @State private var selectedSyllable: String? = nil
     @State private var slot1: String? = nil
@@ -37,7 +38,6 @@ struct WordMatchView: View {
     @State private var currentPhrase: String = ""
     @State private var currentFoundWord: String = ""
     
-    // Estado para controlar la navegación al siguiente archivo
     @State private var navigateToImageExercise: Bool = false
 
     let synthesizer = AVSpeechSynthesizer()
@@ -47,7 +47,6 @@ struct WordMatchView: View {
             Color.background
                 .ignoresSafeArea()
 
-            // NavigationLink invisible que se activa con el botón amarillo
             NavigationLink(
                 destination: ImageWordSelectionView(
                     exercise: nextExercise,
@@ -102,7 +101,6 @@ struct WordMatchView: View {
                 VStack {
                     Spacer()
                     Button(action: {
-                        // Acción: Navegar al siguiente ejercicio de imagen
                         navigateToImageExercise = true
                     }) {
                         Image(systemName: "arrow.right")
@@ -118,7 +116,6 @@ struct WordMatchView: View {
                 .padding(12)
             }
 
-            // MARK: Phrase Sheet overlay
             if showPhraseSheet {
                 WordPhraseSheet(
                     word: currentFoundWord,
@@ -133,6 +130,11 @@ struct WordMatchView: View {
         }
         .animation(.easeInOut(duration: 0.25), value: showPhraseSheet)
         .toolbar(.hidden, for: .navigationBar)
+        // AGREGADO: Instrucciones al iniciar la vista
+        .onAppear {
+            let instrucciones = "Con las sílabas que ves en pantalla, trata de formar palabras. Al presionar una vez puedes escuchar el sonido, y al presionar dos veces seleccionas la sílaba para que sea parte de tu palabra."
+            speak(instrucciones)
+        }
     }
 
     // MARK: - Logic
@@ -163,7 +165,7 @@ struct WordMatchView: View {
                     showPhraseSheet = true
                 }
             } else {
-                speakSyllable("Inténtalo de nuevo")
+                speak("Inténtalo de nuevo")
                 triggerShake()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     resetSlots()
@@ -193,7 +195,9 @@ struct WordMatchView: View {
     }
 
     func speak(_ text: String) {
-        synthesizer.stopSpeaking(at: .immediate)
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "es-MX")
         utterance.rate = 0.4
@@ -201,7 +205,7 @@ struct WordMatchView: View {
     }
 }
 
-// MARK: - Componentes de apoyo (SyllableRow, Button, Slot, etc.)
+// MARK: - Componentes de apoyo (Sin cambios de UI)
 
 struct WordPhraseSheet: View {
     let word: String

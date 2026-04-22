@@ -35,7 +35,7 @@ struct VowelLearning: View {
                         // HOME BUTTON
                         HStack {
                             Button(action: {
-                                
+                                  
                             }) {
                                 Image(systemName: "house.fill")
                                     .font(.title)
@@ -96,10 +96,19 @@ struct VowelLearning: View {
                     }
                 }
             }
+            // AGREGADO: Instrucción auditiva al entrar
+            .onAppear {
+                speak("Presiona cada vocal para conocer su sonido. Hazlo las veces que sea necesario y, cuando estés listo, pica la flecha para continuar.")
+            }
         }
     }
     
     func speak(_ text: String) {
+        // Detener audio previo para evitar que se encimen las voces
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
+        
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "es-MX")
         utterance.rate = 0.4

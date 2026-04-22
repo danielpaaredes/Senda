@@ -1,9 +1,3 @@
-//
-//  VowelSelectionView.swift
-//  Senda
-//
-//  Created by Daniel Paredes on 22/04/26.
-//
 import SwiftUI
 import AVFoundation
 
@@ -32,7 +26,7 @@ struct VowelSelectionView: View {
     }
     
     var body: some View {
-        NavigationStack { // 🔥 Agregamos NavigationStack para permitir la navegación
+        NavigationStack {
             ZStack {
                 Color.background
                     .ignoresSafeArea()
@@ -95,28 +89,32 @@ struct VowelSelectionView: View {
                     Spacer()
                 }
                 
-                // NEXT BUTTON (Flecha para pasar a EjercicioPalaView)
+                // NEXT BUTTON
                 if showNextButton {
-                    HStack {
+                    VStack {
                         Spacer()
-                        
-                        NavigationLink(destination: EjercicioPalaView()) { // 🔥 Conexión a la siguiente vista
-                            Image(systemName: "arrow.right")
-                                .font(.title)
-                                .foregroundColor(.typography)
-                                .padding(.horizontal, 40)
-                                .padding(.vertical, 20)
-                                .background(Color.yellowa)
-                                .cornerRadius(20)
+                        HStack {
+                            Spacer()
+                            NavigationLink(destination: EjercicioPalaView()) {
+                                Image(systemName: "arrow.right")
+                                    .font(.title)
+                                    .foregroundColor(.typography)
+                                    .padding(.horizontal, 40)
+                                    .padding(.vertical, 20)
+                                    .background(Color.yellowa)
+                                    .cornerRadius(20)
+                            }
+                            .padding(.trailing, 30)
+                            .padding(.bottom, 30)
                         }
-                        .padding(.trailing, 30)
                     }
                 }
             }
             .onAppear {
-                playCurrentVowel()
+                // Solo explicamos la instrucción, ya no suena la vocal automáticamente
+                let instruccion = "Dale clic a la bocina y escucha. Debes identificar a qué vocal corresponde el sonido y presionarla dos veces para confirmar."
+                speak(instruccion)
             }
-            // Suponiendo que VowelTracingView es otra vista que ya tienes definida
             .sheet(isPresented: $showTracingView) {
                 VowelTracingView(vowel: currentVowel) {
                     showTracingView = false
@@ -143,7 +141,7 @@ struct VowelSelectionView: View {
     func confirmSelection() {
         if selectedVowel == currentVowel {
             isCorrect = true
-            speak("Correcto.")
+            speak("¡Correcto!")
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                 showTracingView = true
@@ -158,14 +156,18 @@ struct VowelSelectionView: View {
             currentIndex += 1
             selectedVowel = nil
             isCorrect = false
-            playCurrentVowel()
+            // Quitamos playCurrentVowel() de aquí para que el niño tenga que picar la bocina otra vez
         } else {
             showNextButton = true
-            speak("Terminaste, presiona la flecha para continuar")
+            speak("¡Terminaste! Presiona la flecha para continuar.")
         }
     }
     
     func speak(_ text: String) {
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
+        
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "es-MX")
         utterance.rate = 0.4
@@ -181,7 +183,7 @@ struct VowelButton: View {
     
     var backgroundColor: Color {
         if isCorrect { return Color.green.opacity(0.2) }
-        if isSelected { return Color.yellowa }
+        if isSelected { return Color.yellowa.opacity(0.6) }
         return Color.white
     }
     
@@ -197,7 +199,7 @@ struct VowelButton: View {
         Text(text)
             .font(.largeTitle.weight(.medium))
             .foregroundColor(textColor)
-            .padding(.horizontal, 25)
+            .padding(.horizontal, 20)
             .padding(.vertical, 20)
             .frame(maxWidth: .infinity)
             .background(backgroundColor)
@@ -211,7 +213,10 @@ struct VowelButton: View {
     }
 }
 
-#Preview {
-    VowelSelectionView()
-        .previewInterfaceOrientation(.landscapeLeft)
+// Preview
+struct VowelSelectionView_Previews: PreviewProvider {
+    static var previews: some View {
+        VowelSelectionView()
+            .previewInterfaceOrientation(.landscapeLeft)
+    }
 }
